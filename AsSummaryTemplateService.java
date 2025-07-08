@@ -1096,7 +1096,7 @@ public class AsSummaryTemplateService extends CrudService<AsSummaryTemplateDao, 
         } else {
             // 修改：TABLE 类型使用原生 Excel 列来渲染表格
             if ("TABLE".equalsIgnoreCase(node.getField().getFieldType()) && node.getLevel() == 2) {
-                int tableRows = node.getTableMinRows();
+                int tableRows = 5; // 固定5行（1行标题+4行数据）
                 for (int i = 0; i < tableRows; i++) {
                     int rowIndex = nodeStartRow + i;
                     Row row = getOrCreateRow(sheet, rowIndex);
@@ -1206,27 +1206,8 @@ public class AsSummaryTemplateService extends CrudService<AsSummaryTemplateDao, 
                 break;
                 
             case "TABLE":
-                // 表格，显示具体的表格结构
-                if (!node.getColumns().isEmpty()) {
-                    StringBuilder tableText = new StringBuilder("表格内容：\n");
-                    
-                    // 获取所有列名
-                    String headers = node.getColumns().stream()
-                            .map(AsSummaryTemplateTableColumn::getColumnLabel)
-                            .collect(Collectors.joining("\t"));
-                    tableText.append(headers);
-                    
-                    // 构建5行空数据行
-                    for (int rowNum = 1; rowNum <= 5; rowNum++) {
-                        tableText.append("\n");
-                        String emptyRow = node.getColumns().stream()
-                                .map(col -> "_______")
-                                .collect(Collectors.joining("\t"));
-                        tableText.append(emptyRow);
-                    }
-                    
-                    replyCell.setCellValue(tableText.toString());
-                }
+                // TABLE类型不在这里处理，留空即可，由writeNodeWithChildren中的特殊逻辑处理
+                // 这里不要写任何内容，避免与TABLE的多行处理冲突
                 break;
                 
             case "TEXTAREA":
