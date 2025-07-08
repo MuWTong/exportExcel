@@ -86,7 +86,7 @@ public class AsSummaryTemplateService extends CrudService<AsSummaryTemplateDao, 
     private AsColumnConfigDetailDao asColumnConfigDetailDao;
 
     // 添加表格起始列常量和当前填表说明列索引
-    private static final int TABLE_START_COL = 2;
+    private static final int TABLE_START_COL = 3; // 表格从第3列开始（项目|内容|回复|表格开始...）
     private int fillReasonCol;
 
     /**
@@ -971,12 +971,13 @@ public class AsSummaryTemplateService extends CrudService<AsSummaryTemplateDao, 
             Sheet sheet = workbook.createSheet(templateName);
 
             // 动态设置列宽
-            sheet.setColumnWidth(0, 20 * 256);
-            sheet.setColumnWidth(1, 25 * 256);
+            sheet.setColumnWidth(0, 20 * 256);  // 项目列
+            sheet.setColumnWidth(1, 25 * 256);  // 内容列
+            sheet.setColumnWidth(2, 20 * 256);  // 回复列
             for (int i = 0; i < maxTableCols; i++) {
-                sheet.setColumnWidth(TABLE_START_COL + i, 20 * 256);
+                sheet.setColumnWidth(TABLE_START_COL + i, 20 * 256);  // 表格列
             }
-            sheet.setColumnWidth(fillReasonCol, 25 * 256);
+            sheet.setColumnWidth(fillReasonCol, 25 * 256);  // 填表说明列
 
             // 创建样式
             CellStyle titleStyle = createTitleStyle(workbook);
@@ -1026,11 +1027,13 @@ public class AsSummaryTemplateService extends CrudService<AsSummaryTemplateDao, 
         Cell cell1 = titleRow.createCell(1);
         cell1.setCellValue("内容");
         cell1.setCellStyle(headerStyle);
-        // 回复组头，跨表格列
-        Cell cellReply = titleRow.createCell(TABLE_START_COL);
-        cellReply.setCellValue("回复");
-        cellReply.setCellStyle(headerStyle);
-        sheet.addMergedRegion(new CellRangeAddress(1, 1, TABLE_START_COL, fillReasonCol - 1));
+        // 回复列组头，跨越从第2列到填表说明列之前的所有列
+        Cell cell2 = titleRow.createCell(2);
+        cell2.setCellValue("回复");
+        cell2.setCellStyle(headerStyle);
+        if (fillReasonCol > 2) {
+            sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, fillReasonCol - 1));
+        }
         // 填表说明列
         Cell cellDesc = titleRow.createCell(fillReasonCol);
         cellDesc.setCellValue("填表说明");
