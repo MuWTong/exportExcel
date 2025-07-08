@@ -1120,6 +1120,9 @@ public class AsSummaryTemplateService extends CrudService<AsSummaryTemplateDao, 
                     }
                 }
                 // 合并“填表说明”列单元格，使说明跨多行显示
+                // 合并"回复"列单元格（第2列），使"表格"标识跨多行显示
+                mergeRegions.add(new MergeRegion(nodeStartRow, nodeStartRow + tableRows - 1, 2, 2));
+                // 合并"填表说明"列单元格，使说明跨多行显示
                 mergeRegions.add(new MergeRegion(nodeStartRow, nodeStartRow + tableRows - 1, fillReasonCol, fillReasonCol));
                 currentRow = nodeStartRow + tableRows;
             } else {
@@ -1206,8 +1209,8 @@ public class AsSummaryTemplateService extends CrudService<AsSummaryTemplateDao, 
                 break;
                 
             case "TABLE":
-                // TABLE类型不在这里处理，留空即可，由writeNodeWithChildren中的特殊逻辑处理
-                // 这里不要写任何内容，避免与TABLE的多行处理冲突
+                // TABLE类型在回复列显示"表格"标识
+                replyCell.setCellValue("表格");
                 break;
                 
             case "TEXTAREA":
