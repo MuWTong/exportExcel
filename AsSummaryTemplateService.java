@@ -86,7 +86,7 @@ public class AsSummaryTemplateService extends CrudService<AsSummaryTemplateDao, 
     private AsColumnConfigDetailDao asColumnConfigDetailDao;
 
     // 添加表格起始列常量和当前填表说明列索引
-    private static final int TABLE_START_COL = 3; // 表格从第3列开始（项目|内容|回复|表格开始...）
+    private static final int TABLE_START_COL = 3;
     private int fillReasonCol;
 
     /**
@@ -1027,11 +1027,12 @@ public class AsSummaryTemplateService extends CrudService<AsSummaryTemplateDao, 
         Cell cell1 = titleRow.createCell(1);
         cell1.setCellValue("内容");
         cell1.setCellStyle(headerStyle);
-        // 回复列组头，跨越从第2列到填表说明列之前的所有列
+        // 回复列
         Cell cell2 = titleRow.createCell(2);
         cell2.setCellValue("回复");
         cell2.setCellStyle(headerStyle);
-        if (fillReasonCol > 2) {
+        // 如果有表格列，合并回复列跨表格区域
+        if (fillReasonCol > 3) {
             sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, fillReasonCol - 1));
         }
         // 填表说明列
